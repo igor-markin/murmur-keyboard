@@ -397,7 +397,7 @@ public final class GboardAiWritingToolsRuntimeLoggingTest {
     }
 
     @Test
-    public void superInsertPersonalContextFlagsGuardAgainstMissingBundleHint() throws Exception {
+    public void superInsertPersonalContextFlagsStayOff() throws Exception {
         SuperInsertBrowsingHistoryFlagReceiver browsingHistoryReceiver =
                 new SuperInsertBrowsingHistoryFlagReceiver();
         SuperInsertNestaFlagReceiver nestaReceiver =
@@ -415,12 +415,12 @@ public final class GboardAiWritingToolsRuntimeLoggingTest {
             Assert.assertSame(Boolean.FALSE, GboardAiWritingToolsRuntime.applyOverriddenFlagValue(
                     nestaReceiver, Boolean.TRUE));
 
-            // When PersonalContext BundleHint is supported (e.g. future Android 17+)
+            // Murmur keeps Super Insert off even when the platform supports the hint.
             GboardAiWritingToolsRuntime.setPersonalContextHintSupportedForTesting(Boolean.TRUE);
-            Assert.assertSame(Boolean.TRUE, GboardAiWritingToolsRuntime.applyOverriddenFlagValue(
-                    browsingHistoryReceiver, Boolean.FALSE));
-            Assert.assertSame(Boolean.TRUE, GboardAiWritingToolsRuntime.applyOverriddenFlagValue(
-                    nestaReceiver, Boolean.FALSE));
+            Assert.assertSame(Boolean.FALSE, GboardAiWritingToolsRuntime.applyOverriddenFlagValue(
+                    browsingHistoryReceiver, Boolean.TRUE));
+            Assert.assertSame(Boolean.FALSE, GboardAiWritingToolsRuntime.applyOverriddenFlagValue(
+                    nestaReceiver, Boolean.TRUE));
         } finally {
             GboardAiWritingToolsRuntime.setPersonalContextHintSupportedForTesting(null);
         }
@@ -560,27 +560,27 @@ public final class GboardAiWritingToolsRuntimeLoggingTest {
                 GboardAiWritingToolsRuntime.FLAG_EMOJI_PALETTE_V2));
 
         // Super Insert / Quick Insert Hub flags
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_VK));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_ENABLE_DYNAMIC_MULTI_VIEW));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_CONTACTS));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_CLIPBOARD_QUERY_RESULTS));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_EXPRESSION_QUERY_RESULTS));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_LOCAL_IMAGE_RESULTS));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_BROWSING_HISTORY_RESULTS));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_NESTA_RESULTS));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_SUPER_INSERT_BELOW_CURSOR));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_ENABLE_SI_SHORTCUT_KEYS));
 
         // Smart Compose (In-Line Ghost Autocompletion) flags
@@ -602,13 +602,13 @@ public final class GboardAiWritingToolsRuntimeLoggingTest {
                 GboardAiWritingToolsRuntime.FLAG_ALLOW_INCOGNITO_MODE_SWITCH));
 
         // Emogen (Generative AI Emoji Maker) flags
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_ENABLE_EMOGEN));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_EMOGEN_ENTRY_POINT));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_EMOGEN_FEATURE_ENABLED));
-        Assert.assertTrue(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
+        Assert.assertFalse(GboardAiWritingToolsRuntime.isStockPhenotypeEnforcedFlag(
                 GboardAiWritingToolsRuntime.FLAG_EMOGEN_IN_ACCESS_POINTS));
 
         // Sign-to-Text (Signboard ASL Camera Translation) flags reverted
@@ -876,21 +876,21 @@ public final class GboardAiWritingToolsRuntimeLoggingTest {
     }
 
     @Test
-    public void writingHelperServerTargetEnforcesProduction() throws Exception {
+    public void writingHelperServerTargetKeepsGboardValue() throws Exception {
         WritingHelperServerTargetFlagReceiver receiver =
                 new WritingHelperServerTargetFlagReceiver();
         Object enforced = GboardAiWritingToolsRuntime.applyOverriddenFlagValue(
                 receiver, "other-host.googleapis.com");
-        Assert.assertEquals("staging-gboard-imagen-pa.sandbox.googleapis.com", enforced);
+        Assert.assertEquals("other-host.googleapis.com", enforced);
     }
 
     @Test
-    public void gboardImagenApiHostEnforcesProduction() throws Exception {
+    public void gboardImagenApiHostKeepsGboardValue() throws Exception {
         GboardImagenApiHostFlagReceiver receiver =
                 new GboardImagenApiHostFlagReceiver();
         Object enforced = GboardAiWritingToolsRuntime.applyOverriddenFlagValue(
                 receiver, "other-host.googleapis.com");
-        Assert.assertEquals("staging-gboard-imagen-pa.sandbox.googleapis.com", enforced);
+        Assert.assertEquals("other-host.googleapis.com", enforced);
     }
 
     @Test

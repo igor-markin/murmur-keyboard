@@ -62,21 +62,6 @@ private fun applyPatchesSettingsPatch() = with(context) {
 </vector>
 """
         )
-        val updatesIconFile = get("res/drawable/ic_pixelboard_updates.xml", false)
-        updatesIconFile.parentFile?.mkdirs()
-        updatesIconFile.writeText(
-            """<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24"
-    android:tint="?android:attr/colorControlNormal">
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M17,1.01L7,1c-1.1,0 -2,0.9 -2,2v18c0,1.1 0.9,2 2,2h10c1.1,0 2,-0.9 2,-2V3c0,-1.1 -0.9,-1.99 -2,-1.99zM17,19H7V5h10v14zm-1,-6h-3V8h-2v5H8l4,4 4,-4z" />
-</vector>
-"""
-        )
     } catch (_: Throwable) {
     }
 
@@ -121,7 +106,13 @@ internal fun applyGboardPatchesSettings(
     ensureManifestUsesPermission(manifestDocument, manifest, "android.permission.CAMERA")
     ensureManifestUsesPermission(manifestDocument, manifest, "android.permission.READ_MEDIA_IMAGES")
     ensureManifestUsesPermission(manifestDocument, manifest, "android.permission.READ_EXTERNAL_STORAGE")
-    ensureManifestUsesPermission(manifestDocument, manifest, "android.permission.REQUEST_INSTALL_PACKAGES")
+
+    // Gboard's developer debug bridge only serves Google's own dev tools; nothing on a
+    // personal phone needs to reach it from another app.
+    application.childElements("provider").filter {
+        it.getAttributeNS(ANDROID_NS, "name") == WEB_DEBUG_BRIDGE_PROVIDER_CLASS ||
+            it.getAttribute("android:name") == WEB_DEBUG_BRIDGE_PROVIDER_CLASS
+    }.forEach { it.setAndroidAttribute("exported", "false") }
 
     val activity = application.childElements("activity").firstOrNull {
         it.getAttributeNS(ANDROID_NS, "name") == GBOARD_PATCHES_SETTINGS_ACTIVITY_CLASS ||
@@ -222,70 +213,19 @@ internal fun applyGboardPatchesSettings(
         intent.setAndroidAttribute("targetPackage", packageName)
         intent.setAndroidAttribute("targetClass", GBOARD_PATCHES_SETTINGS_ACTIVITY_CLASS)
 
-        val existingUpdatesEntry = candidateEntries.firstOrNull {
-            it.androidAttribute("key") == UPDATES_SETTINGS_ENTRY_KEY
-        }
-        val updatesEntry = existingUpdatesEntry?.takeIf { it.tagName == HEADER_PREFERENCE_TAG }
-            ?: document.createElement(HEADER_PREFERENCE_TAG).also { createdPreference ->
-                if (existingUpdatesEntry != null) {
-                    existingUpdatesEntry.parentNode.replaceChild(createdPreference, existingUpdatesEntry)
-                } else if (targetCategory != null) {
-                    targetCategory.appendChild(createdPreference)
-                } else if (footerPreference != null) {
-                    root.insertBefore(createdPreference, footerPreference)
-                } else {
-                    root.appendChild(createdPreference)
-                }
-            }
-
-        updatesEntry.setAndroidAttribute("persistent", "false")
-        updatesEntry.setAndroidAttribute("title", UPDATES_SETTINGS_ENTRY_TITLE)
-        updatesEntry.setAndroidAttribute("selectable", "true")
-        updatesEntry.setAndroidAttribute("key", UPDATES_SETTINGS_ENTRY_KEY)
-        updatesEntry.removeAndroidAttribute("summary")
-        updatesEntry.setAndroidAttribute("icon", "@drawable/ic_pixelboard_updates")
-
-        val updatesIntent = updatesEntry.childElements("intent").firstOrNull()
-            ?: document.createElement("intent").also { createdIntent ->
-                updatesEntry.appendChild(createdIntent)
-            }
-        updatesIntent.setAndroidAttribute("action", "com.akshaykadam.pixelboard.action.UPDATES")
-        updatesIntent.setAndroidAttribute("targetPackage", packageName)
-        updatesIntent.setAndroidAttribute("targetClass", GBOARD_PATCHES_SETTINGS_ACTIVITY_CLASS)
+        // Murmur has no self-updater: drop the updates entry if an earlier build left one.
+        candidateEntries.filter { it.androidAttribute("key") == UPDATES_SETTINGS_ENTRY_KEY }
+            .forEach { stale -> stale.parentNode?.removeChild(stale) }
 
         if (targetCategory != null) {
             if (patchesEntry.parentNode != targetCategory) {
                 patchesEntry.parentNode?.removeChild(patchesEntry)
                 targetCategory.appendChild(patchesEntry)
             }
-            if (updatesEntry.parentNode != targetCategory) {
-                updatesEntry.parentNode?.removeChild(updatesEntry)
-                targetCategory.appendChild(updatesEntry)
-            } else {
-                targetCategory.removeChild(updatesEntry)
-                val nextSibling = patchesEntry.nextSibling
-                if (nextSibling != null) {
-                    targetCategory.insertBefore(updatesEntry, nextSibling)
-                } else {
-                    targetCategory.appendChild(updatesEntry)
-                }
-            }
         } else if (footerPreference != null) {
             if (patchesEntry.parentNode != root) {
                 patchesEntry.parentNode?.removeChild(patchesEntry)
                 root.insertBefore(patchesEntry, footerPreference)
-            }
-            if (updatesEntry.parentNode != root) {
-                updatesEntry.parentNode?.removeChild(updatesEntry)
-                root.insertBefore(updatesEntry, footerPreference)
-            } else {
-                root.removeChild(updatesEntry)
-                val nextSibling = patchesEntry.nextSibling
-                if (nextSibling != null && nextSibling != updatesEntry) {
-                    root.insertBefore(updatesEntry, nextSibling)
-                } else {
-                    root.insertBefore(updatesEntry, footerPreference)
-                }
             }
         }
     }
@@ -487,16 +427,6 @@ internal fun applyPixelboardStringsOverride() = with(context) {
             }
         }
 
-        val localizedUpdatesTitle = UPDATES_TITLE_TRANSLATIONS[lang] ?: "PixelBoard updates"
-        if (!text.contains("name=\"pixelboard_patches_updates_title\"")) {
-            val endResourcesIndex = text.lastIndexOf("</resources>")
-            if (endResourcesIndex >= 0) {
-                text = text.substring(0, endResourcesIndex) +
-                    "    <string name=\"pixelboard_patches_updates_title\">$localizedUpdatesTitle</string>\n" +
-                    text.substring(endResourcesIndex)
-                modified = true
-            }
-        }
 
         if (modified) {
             file.writeText(text)
@@ -545,9 +475,9 @@ internal fun Element.setAndroidAttribute(localName: String, value: String) {
     }
 }
 
-internal const val PIXELBOARD_SETTINGS_TITLE = "PixelBoard Settings"
-internal const val PIXELBOARD_SPELL_CHECKER_LABEL = "PixelBoard Spell Checker"
-internal const val PIXELBOARD_SPELL_CHECKER_SETTINGS_LABEL = "PixelBoard Spell Checker Settings"
+internal const val PIXELBOARD_SETTINGS_TITLE = "Murmur Settings"
+internal const val PIXELBOARD_SPELL_CHECKER_LABEL = "Murmur Spell Checker"
+internal const val PIXELBOARD_SPELL_CHECKER_SETTINGS_LABEL = "Murmur Spell Checker Settings"
 internal const val GBOARD_SETTINGS_ACTIVITY_CLASS =
     "com.google.android.apps.inputmethod.latin.preference.SettingsActivity"
 internal const val GBOARD_SPELL_CHECKER_SERVICE_CLASS =
@@ -564,7 +494,8 @@ internal const val GBOARD_PATCHES_SETTINGS_PROVIDER_AUTHORITY_SUFFIX = ".gboard_
 private const val PATCHES_SETTINGS_ENTRY_KEY = "gboard_patches_entry"
 private const val PATCHES_SETTINGS_ENTRY_TITLE = "@string/pixelboard_patches_settings_title"
 private const val UPDATES_SETTINGS_ENTRY_KEY = "pixelboard_updates_entry"
-private const val UPDATES_SETTINGS_ENTRY_TITLE = "@string/pixelboard_patches_updates_title"
+private const val WEB_DEBUG_BRIDGE_PROVIDER_CLASS =
+    "com.google.android.libraries.inputmethod.webdebugbridge.WebDebugBridgeContentProvider"
 private const val HEADER_PREFERENCE_TAG =
     "com.google.android.libraries.inputmethod.settings.widget.HeaderPreference"
 private const val RATE_US_PREFERENCE_TAG =
@@ -597,25 +528,3 @@ private val SETTINGS_TITLE_TRANSLATIONS = mapOf(
     "uk" to "Розширені налаштування",
 )
 
-private val UPDATES_TITLE_TRANSLATIONS = mapOf(
-    "en" to "PixelBoard updates",
-    "es" to "Actualizaciones de PixelBoard",
-    "fr" to "Mises à jour de PixelBoard",
-    "de" to "PixelBoard-Updates",
-    "it" to "Aggiornamenti PixelBoard",
-    "pt" to "Atualizações do PixelBoard",
-    "ru" to "Обновления PixelBoard",
-    "hi" to "PixelBoard अपडेट",
-    "ja" to "PixelBoardのアップデート",
-    "ko" to "PixelBoard 업데이트",
-    "zh" to "PixelBoard 更新",
-    "ar" to "تحديثات PixelBoard",
-    "in" to "Pembaruan PixelBoard",
-    "id" to "Pembaruan PixelBoard",
-    "tr" to "PixelBoard güncellemeleri",
-    "vi" to "Cập nhật PixelBoard",
-    "pl" to "Aktualizacje PixelBoard",
-    "nl" to "PixelBoard-updates",
-    "th" to "อัปเดต PixelBoard",
-    "uk" to "Оновлення PixelBoard",
-)

@@ -107,8 +107,6 @@ import java.util.concurrent.RejectedExecutionException;
 import com.akshaykadam.pixelboard.extension.R;
 import com.akshaykadam.pixelboard.extension.BuildConfig;
 import com.akshaykadam.pixelboard.extension.settings.keyboardpreview.GboardKeyboardPreviewController;
-import com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateFeature;
-import com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateManager;
 
 public final class GboardPatchesSettingsActivity extends Activity
         implements GboardPatchesSettingsContract.Host {
@@ -123,7 +121,7 @@ public final class GboardPatchesSettingsActivity extends Activity
     private static final String GBOARD_PACKAGE_STABLE =
             "com.google.android.inputmethod.latin";
     private static final String GBOARD_PACKAGE_REVERSED_DEV =
-            "com.akshaykadam.pixelboard";
+            "dev.markin.murmur";
     private static final String LIVE_TRANSCRIBE_PACKAGE_NAME =
             "com.google.audio.hearing.visualization.accessibility.scribe";
     private static final String SPEECH_SERVICES_PACKAGE_NAME =
@@ -156,8 +154,6 @@ public final class GboardPatchesSettingsActivity extends Activity
     private static final String DOCUMENT_PICKER_FAILED = "Unable to open file picker.";
     private static final String DOCUMENT_WRITE_FAILED = "Failed to export file.";
     private static final String DOCUMENT_READ_FAILED = "Failed to import file.";
-    public static final String ACTION_UPDATES =
-            "com.akshaykadam.pixelboard.action.UPDATES";
     private boolean standaloneFeatureMode;
     private Palette palette;
     private FrameLayout toolbarView;
@@ -481,6 +477,7 @@ public final class GboardPatchesSettingsActivity extends Activity
         return SUPPORTED_DEVELOPER_OPTIONS_TARGET_VERSION.equals(versionName)
                 || "18.3.1.977415014-release-arm64-v8a".equals(versionName)
                 || "18.4.1.985164140-release-arm64-v8a".equals(versionName)
+                || "18.4.6.985164140-release-arm64-v8a".equals(versionName)
                 || "18.5.3.993608717-release-arm64-v8a".equals(versionName);
     }
 
@@ -2900,24 +2897,7 @@ public final class GboardPatchesSettingsActivity extends Activity
         if (intent == null) {
             return false;
         }
-        if (ACTION_UPDATES.equals(intent.getAction())) {
-            standaloneFeatureMode = true;
-            for (GboardPatchesSettingsContract.Feature feature : features) {
-                if (feature instanceof PixelBoardUpdateFeature) {
-                    List<GboardPatchesSettingsContract.Feature> path =
-                            Collections.singletonList(feature);
-                    runOnUiThread(() -> {
-                        scrollState.resetForDirectPath(0);
-                        requestScrollPositionOnNextScreenApply(0);
-                        applyOrchestration(settingsOrchestrator.accept(
-                                GboardPatchesSettingsOrchestrator.Event.replacePath(path)));
-                    });
-                    return true;
-                }
-            }
-        } else {
-            standaloneFeatureMode = false;
-        }
+        standaloneFeatureMode = false;
         if (restoreNavigationPathFromIntent(intent)) {
             return true;
         }

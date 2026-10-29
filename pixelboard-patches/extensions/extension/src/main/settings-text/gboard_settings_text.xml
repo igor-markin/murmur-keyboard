@@ -314,8 +314,8 @@
         <translation locale="ar">تعذّر تحميل الميزة</translation>
     </string>
     <string name="gboard_patches_error_row_summary">
-        <translation locale="en">The host app stayed alive. Reopen PixelBoard settings and try again.</translation>
-        <translation locale="ar">ظل التطبيق المضيف يعمل. أعد فتح إعدادات PixelBoard وحاول مجدداً.</translation>
+        <translation locale="en">The host app stayed alive. Reopen Murmur settings and try again.</translation>
+        <translation locale="ar">ظل التطبيق المضيف يعمل. أعد فتح إعدادات Murmur وحاول مجدداً.</translation>
     </string>
     <string name="gboard_patches_fatal_fallback_title">
         <translation locale="en">Patches temporarily unavailable</translation>
@@ -414,8 +414,8 @@
         <translation locale="uk">Попередження</translation>
     </string>
     <string name="gboard_patches_restart_failed">
-        <translation locale="en">Gboard could not be restarted. Reopen PixelBoard settings and try again.</translation>
-        <translation locale="ar">تعذّرت إعادة تشغيل Gboard. أعد فتح إعدادات PixelBoard وحاول مجدداً.</translation>
+        <translation locale="en">Gboard could not be restarted. Reopen Murmur settings and try again.</translation>
+        <translation locale="ar">تعذّرت إعادة تشغيل Gboard. أعد فتح إعدادات Murmur وحاول مجدداً.</translation>
     </string>
     <string name="gboard_patches_language_title">
         <translation locale="en">Language</translation>
@@ -462,8 +462,8 @@
         <translation locale="ar">حزمة Gboard غير مدعومة</translation>
     </string>
     <string name="gboard_patches_developer_options_package_warning_message">
-        <translation locale="en">The current Gboard package is %1$s. PixelBoard Patches supports only the official package com.google.android.inputmethod.latin and com.akshaykadam.pixelboard. Mixing Gboard builds from multiple sources may cause instability.</translation>
-        <translation locale="ar">حزمة Gboard الحالية هي %1$s. تدعم ترقيعات PixelBoard الحزمة الرسمية com.google.android.inputmethod.latin وحزمة com.akshaykadam.pixelboard فقط. قد يؤدي خلط إصدارات Gboard من مصادر متعددة إلى عدم الاستقرار.</translation>
+        <translation locale="en">The current Gboard package is %1$s. Murmur supports only the official package com.google.android.inputmethod.latin and dev.markin.murmur. Mixing Gboard builds from multiple sources may cause instability.</translation>
+        <translation locale="ar">حزمة Gboard الحالية هي %1$s. تدعم ترقيعات Murmur الحزمة الرسمية com.google.android.inputmethod.latin وحزمة com.akshaykadam.pixelboard فقط. قد يؤدي خلط إصدارات Gboard من مصادر متعددة إلى عدم الاستقرار.</translation>
     </string>
     <string name="gboard_patches_developer_options_try_anyway">
         <translation locale="en">Try anyway</translation>
@@ -490,8 +490,8 @@
         <translation locale="ar">أدوات الكتابة بالذكاء الاصطناعي غير متوفرة</translation>
     </string>
     <string name="gboard_patches_ai_writing_tools_error_summary">
-        <translation locale="en">The AI Writing Tools settings screen failed to load. Reopen PixelBoard settings and try again.</translation>
-        <translation locale="ar">تعذّر تحميل شاشة إعدادات أدوات الكتابة بالذكاء الاصطناعي. أعد فتح إعدادات PixelBoard وحاول مجدداً.</translation>
+        <translation locale="en">The AI Writing Tools settings screen failed to load. Reopen Murmur settings and try again.</translation>
+        <translation locale="ar">تعذّر تحميل شاشة إعدادات أدوات الكتابة بالذكاء الاصطناعي. أعد فتح إعدادات Murmur وحاول مجدداً.</translation>
     </string>
     <string name="gboard_patches_ai_writing_tools_enabled_title">
         <translation locale="en">Enable AI Writing Tools</translation>
@@ -622,8 +622,8 @@
         <translation locale="ar">الكتابة الصوتية المتقدمة غير متوفرة</translation>
     </string>
     <string name="gboard_patches_advanced_voice_error_summary">
-        <translation locale="en">The Advanced Voice Typing settings screen failed to load. Reopen PixelBoard settings and try again.</translation>
-        <translation locale="ar">تعذّر تحميل شاشة إعدادات الكتابة الصوتية المتقدمة. أعد فتح إعدادات PixelBoard وحاول مجدداً.</translation>
+        <translation locale="en">The Advanced Voice Typing settings screen failed to load. Reopen Murmur settings and try again.</translation>
+        <translation locale="ar">تعذّر تحميل شاشة إعدادات الكتابة الصوتية المتقدمة. أعد فتح إعدادات Murmur وحاول مجدداً.</translation>
     </string>
     <string name="gboard_patches_advanced_voice_enabled_title">
         <translation locale="en">Enable Advanced Voice Typing</translation>
@@ -772,8 +772,8 @@
         <translation locale="ar">متطلبات التثبيت (مستوفاة حالياً)</translation>
     </string>
     <string name="gboard_patches_advanced_voice_payload_present_requirement_summary">
-        <translation locale="en">No download is needed right now. For future updates or reinstalls, you must still use a bundle or split APKM and apply the patch with PixelBoard Patcher; a standalone APK cannot work.\nTap to view the APKMirror download page</translation>
-        <translation locale="ar">لا يلزم أي تنزيل حالياً. بالنسبة للتحديثات المستقبلية أو إعادة التثبيت، يجب عليك استخدام حزمة مجمّعة (Bundle) أو حزم مجزأة (APKM) وتطبيق الترقيع عبر PixelBoard Patcher؛ فحزم APK المستقلة لن تعمل.\nانقر لعرض صفحة التنزيل على APKMirror</translation>
+        <translation locale="en">No download is needed right now. For future updates or reinstalls, you must still use a bundle or split APKM and apply the patch with Murmur build.sh; a standalone APK cannot work.\nTap to view the APKMirror download page</translation>
+        <translation locale="ar">لا يلزم أي تنزيل حالياً. بالنسبة للتحديثات المستقبلية أو إعادة التثبيت، يجب عليك استخدام حزمة مجمّعة (Bundle) أو حزم مجزأة (APKM) وتطبيق الترقيع عبر Murmur build.sh؛ فحزم APK المستقلة لن تعمل.\nانقر لعرض صفحة التنزيل على APKMirror</translation>
     </string>
     <string name="gboard_patches_advanced_voice_payload_absent_title">
         <translation locale="en">Dictation payload (Not installed)</translation>
@@ -788,8 +788,8 @@
         <translation locale="ar">الحصول على حزمة مجمّعة أو مجزأة (APKM)</translation>
     </string>
     <string name="gboard_patches_advanced_voice_payload_absent_requirement_summary">
-        <translation locale="en">Get a bundle or split APKM and apply the patch with PixelBoard Patcher; a standalone APK cannot work.\nTap to open the APKMirror download page</translation>
-        <translation locale="ar">احصل على حزمة مجمّعة أو مجزأة (APKM) وطبّق الترقيع عبر PixelBoard Patcher؛ فحزم APK المستقلة لن تعمل.\nانقر لفتح صفحة التنزيل على APKMirror</translation>
+        <translation locale="en">Get a bundle or split APKM and apply the patch with Murmur build.sh; a standalone APK cannot work.\nTap to open the APKMirror download page</translation>
+        <translation locale="ar">احصل على حزمة مجمّعة أو مجزأة (APKM) وطبّق الترقيع عبر Murmur build.sh؛ فحزم APK المستقلة لن تعمل.\nانقر لفتح صفحة التنزيل على APKMirror</translation>
     </string>
     <string name="gboard_patches_advanced_voice_payload_unknown_title">
         <translation locale="en">Dictation payload (Unable to verify)</translation>
@@ -804,8 +804,8 @@
         <translation locale="ar">التحقق من مصدر التثبيت</translation>
     </string>
     <string name="gboard_patches_advanced_voice_payload_unknown_requirement_summary">
-        <translation locale="en">It is currently unclear whether another download is needed. Verify that you used a bundle or split APKM and applied the patch with PixelBoard Patcher; a standalone APK cannot work.\nTap to view the APKMirror download page</translation>
-        <translation locale="ar">من غير الواضح حالياً ما إذا كان يلزم تنزيل آخر. تأكد من أنك استخدمت حزمة مجمّعة أو مجزأة (APKM) وطبّقت الترقيع عبر PixelBoard Patcher؛ فحزم APK المستقلة لن تعمل.\nانقر لعرض صفحة التنزيل على APKMirror</translation>
+        <translation locale="en">It is currently unclear whether another download is needed. Verify that you used a bundle or split APKM and applied the patch with Murmur build.sh; a standalone APK cannot work.\nTap to view the APKMirror download page</translation>
+        <translation locale="ar">من غير الواضح حالياً ما إذا كان يلزم تنزيل آخر. تأكد من أنك استخدمت حزمة مجمّعة أو مجزأة (APKM) وطبّقت الترقيع عبر Murmur build.sh؛ فحزم APK المستقلة لن تعمل.\nانقر لعرض صفحة التنزيل على APKMirror</translation>
     </string>
     <string name="gboard_patches_rounded_keys_enabled_title">
         <translation locale="en">Rounded Keys</translation>
@@ -1032,8 +1032,8 @@
         <translation locale="ar">سلوك الاحتفاظ</translation>
     </string>
     <string name="gboard_patches_update_title">
-        <translation locale="en">PixelBoard updates</translation>
-        <translation locale="ar">تحديثات PixelBoard</translation>
+        <translation locale="en">Murmur updates</translation>
+        <translation locale="ar">تحديثات Murmur</translation>
     </string>
     <string name="gboard_patches_update_summary">
         <translation locale="en">Check for updates, view changelog &amp; download APK</translation>
@@ -1060,8 +1060,8 @@
         <translation locale="ar">التحديث متوفر</translation>
     </string>
     <string name="gboard_patches_update_status_available_summary">
-        <translation locale="en">A new version of PixelBoard is available for download.</translation>
-        <translation locale="ar">يتوفر إصدار جديد من PixelBoard للتنزيل.</translation>
+        <translation locale="en">A new version of Murmur is available for download.</translation>
+        <translation locale="ar">يتوفر إصدار جديد من Murmur للتنزيل.</translation>
     </string>
     <string name="gboard_patches_update_status_downloading_title">
         <translation locale="en">Downloading update...</translation>
@@ -1084,8 +1084,8 @@
         <translation locale="ar">أنت على آخر تحديث</translation>
     </string>
     <string name="gboard_patches_update_status_uptodate_summary">
-        <translation locale="en">PixelBoard v%1$s is currently the latest release.</translation>
-        <translation locale="ar">PixelBoard v%1$s هو أحدث إصدار حالياً.</translation>
+        <translation locale="en">Murmur v%1$s is currently the latest release.</translation>
+        <translation locale="ar">Murmur v%1$s هو أحدث إصدار حالياً.</translation>
     </string>
     <string name="gboard_patches_update_status_error_title">
         <translation locale="en">Unable to check for updates</translation>
@@ -1132,8 +1132,8 @@
         <translation locale="ar">التحقق التلقائي من التحديثات</translation>
     </string>
     <string name="gboard_patches_update_pref_autocheck_summary">
-        <translation locale="en">Check for new releases when opening PixelBoard settings</translation>
-        <translation locale="ar">التحقق من الإصدارات الجديدة عند فتح إعدادات PixelBoard</translation>
+        <translation locale="en">Check for new releases when opening Murmur settings</translation>
+        <translation locale="ar">التحقق من الإصدارات الجديدة عند فتح إعدادات Murmur</translation>
     </string>
     <string name="gboard_patches_update_section_preferences">
         <translation locale="en">Preferences</translation>

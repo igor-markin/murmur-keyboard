@@ -35,14 +35,14 @@ class GboardPackageRenamePatchContractTest {
         assertEquals(1, patch.dependencies.size)
         assertSame(gboardPackageRenameResourcePatch, patch.dependencies.single())
         assertEquals("com.google.android.inputmethod.latin", GBOARD_PACKAGE_NAME)
-        assertEquals("com.akshaykadam.pixelboard", GBOARD_PATCHED_PACKAGE_NAME)
+        assertEquals("dev.markin.murmur", GBOARD_PATCHED_PACKAGE_NAME)
 
         val compatibilities = checkNotNull(patch.compatibility)
         assertEquals(1, compatibilities.size)
         assertSame(COMPATIBILITY_GBOARD, compatibilities.single())
         assertEquals(GBOARD_PACKAGE_NAME, compatibilities.single().packageName)
         assertEquals(
-            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1853_RELEASE),
+            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1846_RELEASE, TARGET_VERSION_1853_RELEASE),
             compatibilities.single().targets.map { target -> target.version },
         )
         assertTrue(compatibilities.single().targets.none { target -> target.isExperimental })
@@ -77,7 +77,7 @@ class GboardPackageRenamePatchContractTest {
         val packages = row.getAsJsonObject("compatiblePackages")
         assertEquals(setOf(GBOARD_PACKAGE_NAME), packages.keySet())
         assertEquals(
-            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1853_RELEASE),
+            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1846_RELEASE, TARGET_VERSION_1853_RELEASE),
             packages.getAsJsonArray(GBOARD_PACKAGE_NAME).map { it.asString },
         )
     }
@@ -111,17 +111,18 @@ class GboardPackageRenamePatchContractTest {
         const val TARGET_VERSION_1831 = "18.3.1.977415014-beta-arm64-v8a"
         const val TARGET_VERSION_1831_RELEASE = "18.3.1.977415014-release-arm64-v8a"
         const val TARGET_VERSION_1841_RELEASE = "18.4.1.985164140-release-arm64-v8a"
+        const val TARGET_VERSION_1846_RELEASE = "18.4.6.985164140-release-arm64-v8a"
         const val TARGET_VERSION_1853_RELEASE = "18.5.3.993608717-release-arm64-v8a"
         const val PACKAGE_RENAME_DESCRIPTION =
-            "Rename the package to com.akshaykadam.pixelboard " +
+            "Rename the package to dev.markin.murmur " +
                 "and allow a custom app name so it can be installed alongside " +
                 "the official Gboard."
         const val APP_DISPLAY_NAME_OPTION_KEY = "app_display_name"
         const val APP_DISPLAY_NAME_OPTION_TITLE = "App Name"
         const val APP_DISPLAY_NAME_OPTION_DESCRIPTION = ""
-        const val APP_DISPLAY_NAME_DEFAULT = "PixelBoard"
+        const val APP_DISPLAY_NAME_DEFAULT = "Murmur"
         val APP_DISPLAY_NAME_PRESETS = linkedMapOf(
-            "PixelBoard" to "PixelBoard",
+            "Murmur" to "Murmur",
             "Gboard" to "Gboard",
             "Gboard Dev" to "Gboard Dev",
             "Gboard Patches" to "Gboard Patches",

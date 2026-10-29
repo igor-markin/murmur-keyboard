@@ -86,7 +86,7 @@ val gboardAiWritingToolsPatch = gboardPublicResourcePatch(
 val gboardSignatureBypassPatch = gboardPublicResourcePatch(
     featureId = "add_gboard_signature_bypass",
     name = "Add Gboard Signature Bypass",
-    description = "Bypass Gboard signature whitelist checks and force them to pass.",
+    description = "Let Gboard pass its own-package signature check after re-signing; other callers keep the stock check.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
@@ -99,7 +99,7 @@ val gboardSignatureBypassPatch = gboardPublicResourcePatch(
 val gboardPackageRenamePatch = gboardPublicResourcePatch(
     featureId = "package_rename",
     name = "Package Rename",
-    description = "Rename the package to com.akshaykadam.pixelboard and allow " +
+    description = "Rename the package to dev.markin.murmur and allow " +
         "a custom app name so it can be installed alongside the official Gboard.",
     default = true
 ) {
@@ -107,9 +107,9 @@ val gboardPackageRenamePatch = gboardPublicResourcePatch(
 
     val appDisplayName = stringOption(
         key = "app_display_name",
-        default = "PixelBoard",
+        default = "Murmur",
         values = linkedMapOf(
-            "PixelBoard" to "PixelBoard",
+            "Murmur" to "Murmur",
             "Gboard" to "Gboard",
             "Gboard Dev" to "Gboard Dev",
             "Gboard Patches" to "Gboard Patches",

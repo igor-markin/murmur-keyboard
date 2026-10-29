@@ -22,8 +22,6 @@ import java.lang.reflect.Method;
  *   <li>1 hour ("1")</li>
  *   <li>24 hours (Current maximum) ("24")</li>
  *   <li>7 days ("168")</li>
- *   <li>30 days ("720")</li>
- *   <li>Never (Unlimited / Manual deletion only) ("876000", 100 years)</li>
  * </ol>
  */
 public final class GboardClipboardHistoryRuntime {
@@ -33,17 +31,13 @@ public final class GboardClipboardHistoryRuntime {
     public static final CharSequence[] RETENTION_LABELS = new CharSequence[] {
             "1 hour",
             "24 hours (Current maximum)",
-            "7 days",
-            "30 days",
-            "Never (Unlimited / Manual deletion only)"
+            "7 days"
     };
 
     public static final CharSequence[] RETENTION_VALUES = new CharSequence[] {
             GboardClipboardHistorySettings.DURATION_1_HOUR,
             GboardClipboardHistorySettings.DURATION_24_HOURS,
-            GboardClipboardHistorySettings.DURATION_7_DAYS,
-            GboardClipboardHistorySettings.DURATION_30_DAYS,
-            GboardClipboardHistorySettings.DURATION_NEVER
+            GboardClipboardHistorySettings.DURATION_7_DAYS
     };
 
     private GboardClipboardHistoryRuntime() {
@@ -72,7 +66,7 @@ public final class GboardClipboardHistoryRuntime {
                 lField.set(preference, RETENTION_VALUES.clone());
             }
 
-            int maxIndex = RETENTION_VALUES.length - 1; // 4
+            int maxIndex = RETENTION_VALUES.length - 1; // 2
 
             // Determine target index from currently persisted string or fallback to index 1 ("24" / 24 hours)
             int targetIndex = 1;
