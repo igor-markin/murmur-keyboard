@@ -177,10 +177,12 @@ public final class GboardAiWritingToolsSettings {
 
     public static String sanitizeBackendType(String backendType) {
         if (BACKEND_PRIVATE_INFERENCE_AICORE.equals(backendType)
-                || BACKEND_PRIVATE_INFERENCE_ASTREA.equals(backendType)) {
+                || BACKEND_PRIVATE_INFERENCE_ASTREA.equals(backendType)
+                || BACKEND_GBOARD_SERVER.equals(backendType)) {
             return backendType;
         }
-        return BACKEND_GBOARD_SERVER;
+        // Unknown or corrupted values fall back to on-device, never silently to the server.
+        return DEFAULT_BACKEND_TYPE;
     }
 
     public static Snapshot snapshot(Context context) {

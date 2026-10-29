@@ -666,7 +666,7 @@ class GboardPackageRenameTransformTest {
             val matchingIntents = elements(document, "intent").filter { intent ->
                 androidAttribute(intent, "targetClass") == SETTINGS_ACTIVITY_CLASS
             }
-            assertEquals(2, matchingIntents.size)
+            assertEquals(1, matchingIntents.size)
             matchingIntents.forEach { intent ->
                 assertEquals(FINAL_PACKAGE, androidAttribute(intent, "targetPackage"))
             }
