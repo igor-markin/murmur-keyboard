@@ -71,21 +71,21 @@ public final class GboardAiWritingToolsSettingsTest {
     }
 
     @Test
-    public void backendTypeSanitizesMissingInvalidAndLegacyBooleanValuesToServer() {
+    public void backendTypeSanitizesMissingInvalidAndLegacyBooleanValuesToDefault() {
         InMemorySharedPreferences preferences = new InMemorySharedPreferences();
 
         preferences.edit()
                 .putBoolean("pref_ai_writing_tools_use_google_servers", false)
                 .apply();
         Assert.assertEquals(
-                GboardAiWritingToolsSettings.BACKEND_GBOARD_SERVER,
+                GboardAiWritingToolsSettings.DEFAULT_BACKEND_TYPE,
                 GboardAiWritingToolsSettings.readBackendType(preferences));
 
         preferences.edit()
                 .putString(GboardAiWritingToolsSettings.PREF_KEY_BACKEND_TYPE, "INVALID")
                 .apply();
         Assert.assertEquals(
-                GboardAiWritingToolsSettings.BACKEND_GBOARD_SERVER,
+                GboardAiWritingToolsSettings.DEFAULT_BACKEND_TYPE,
                 GboardAiWritingToolsSettings.readBackendType(preferences));
 
         preferences.edit()

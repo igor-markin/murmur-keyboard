@@ -475,9 +475,9 @@ internal fun Element.setAndroidAttribute(localName: String, value: String) {
     }
 }
 
-internal const val PIXELBOARD_SETTINGS_TITLE = "PixelBoard Settings"
-internal const val PIXELBOARD_SPELL_CHECKER_LABEL = "PixelBoard Spell Checker"
-internal const val PIXELBOARD_SPELL_CHECKER_SETTINGS_LABEL = "PixelBoard Spell Checker Settings"
+internal const val PIXELBOARD_SETTINGS_TITLE = "Murmur Settings"
+internal const val PIXELBOARD_SPELL_CHECKER_LABEL = "Murmur Spell Checker"
+internal const val PIXELBOARD_SPELL_CHECKER_SETTINGS_LABEL = "Murmur Spell Checker Settings"
 internal const val GBOARD_SETTINGS_ACTIVITY_CLASS =
     "com.google.android.apps.inputmethod.latin.preference.SettingsActivity"
 internal const val GBOARD_SPELL_CHECKER_SERVICE_CLASS =

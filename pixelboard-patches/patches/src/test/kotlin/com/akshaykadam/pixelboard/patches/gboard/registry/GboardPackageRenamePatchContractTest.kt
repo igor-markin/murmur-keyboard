@@ -114,15 +114,15 @@ class GboardPackageRenamePatchContractTest {
         const val TARGET_VERSION_1846_RELEASE = "18.4.6.985164140-release-arm64-v8a"
         const val TARGET_VERSION_1853_RELEASE = "18.5.3.993608717-release-arm64-v8a"
         const val PACKAGE_RENAME_DESCRIPTION =
-            "Rename the package to com.akshaykadam.pixelboard " +
+            "Rename the package to dev.markin.murmur " +
                 "and allow a custom app name so it can be installed alongside " +
                 "the official Gboard."
         const val APP_DISPLAY_NAME_OPTION_KEY = "app_display_name"
         const val APP_DISPLAY_NAME_OPTION_TITLE = "App Name"
         const val APP_DISPLAY_NAME_OPTION_DESCRIPTION = ""
-        const val APP_DISPLAY_NAME_DEFAULT = "PixelBoard"
+        const val APP_DISPLAY_NAME_DEFAULT = "Murmur"
         val APP_DISPLAY_NAME_PRESETS = linkedMapOf(
-            "PixelBoard" to "PixelBoard",
+            "Murmur" to "Murmur",
             "Gboard" to "Gboard",
             "Gboard Dev" to "Gboard Dev",
             "Gboard Patches" to "Gboard Patches",

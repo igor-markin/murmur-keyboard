@@ -99,7 +99,7 @@ val gboardSignatureBypassPatch = gboardPublicResourcePatch(
 val gboardPackageRenamePatch = gboardPublicResourcePatch(
     featureId = "package_rename",
     name = "Package Rename",
-    description = "Rename the package to com.akshaykadam.pixelboard and allow " +
+    description = "Rename the package to dev.markin.murmur and allow " +
         "a custom app name so it can be installed alongside the official Gboard.",
     default = true
 ) {
@@ -107,9 +107,9 @@ val gboardPackageRenamePatch = gboardPublicResourcePatch(
 
     val appDisplayName = stringOption(
         key = "app_display_name",
-        default = "PixelBoard",
+        default = "Murmur",
         values = linkedMapOf(
-            "PixelBoard" to "PixelBoard",
+            "Murmur" to "Murmur",
             "Gboard" to "Gboard",
             "Gboard Dev" to "Gboard Dev",
             "Gboard Patches" to "Gboard Patches",

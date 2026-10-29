@@ -54,7 +54,7 @@
     },
     {
       "name": "Package Rename",
-      "description": "Rename the package to com.akshaykadam.pixelboard and allow a custom app name so it can be installed alongside the official Gboard.",
+      "description": "Rename the package to dev.markin.murmur and allow a custom app name so it can be installed alongside the official Gboard.",
       "use": true,
       "dependencies": [],
       "compatiblePackages": {
@@ -74,9 +74,9 @@
           "description": "",
           "required": true,
           "type": "kotlin.String",
-          "default": "PixelBoard",
+          "default": "Murmur",
           "values": {
-            "PixelBoard": "PixelBoard",
+            "Murmur": "Murmur",
             "Gboard": "Gboard",
             "Gboard Dev": "Gboard Dev",
             "Gboard Patches": "Gboard Patches",

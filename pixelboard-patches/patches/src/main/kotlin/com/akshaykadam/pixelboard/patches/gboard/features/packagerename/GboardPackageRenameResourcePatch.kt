@@ -537,8 +537,8 @@ private fun validateSettingsIdentity(
                     GBOARD_PATCHES_SETTINGS_ACTIVITY_CLASS
             }
             .toList()
-        check(matchingIntents.size <= 2) {
-            "Expected at most two Gboard patches settings intents, found ${matchingIntents.size}"
+        check(matchingIntents.size <= SETTINGS_INTENTS_PER_DOCUMENT) {
+            "Expected at most one Gboard patches settings intent, found ${matchingIntents.size}"
         }
         matchingIntents.map { intent ->
             val targetPackage = intent.androidAttribute("targetPackage")
@@ -553,7 +553,7 @@ private fun validateSettingsIdentity(
 
     val hasProvider = providerAuthority != null
     val hasAllSettingsIntents =
-        settingsDocuments.isNotEmpty() && targetPackagesByDocument.all { it.size == 2 }
+        settingsDocuments.isNotEmpty() && targetPackagesByDocument.all { it.size == SETTINGS_INTENTS_PER_DOCUMENT }
     val hasAnySettingsIntent = targetPackagesByDocument.any { it.isNotEmpty() }
     check(
         (!hasProvider && !hasAnySettingsIntent) ||
@@ -561,7 +561,7 @@ private fun validateSettingsIdentity(
     ) {
         "Partial Gboard patches settings identity: provider=$hasProvider, " +
             "settingsIntents=${targetPackagesByDocument.sumOf { it.size }}/" +
-            (settingsDocuments.size * 2)
+            (settingsDocuments.size * SETTINGS_INTENTS_PER_DOCUMENT)
     }
 
     return SettingsIdentity(
@@ -636,6 +636,9 @@ private data class SettingsIdentity(
     val providerAuthority: Attr?,
     val targetPackages: List<Attr>,
 )
+
+// One settings entry per Gboard settings XML (Murmur has no "Updates" entry).
+private const val SETTINGS_INTENTS_PER_DOCUMENT = 1
 
 private const val DOUBLE_PREFIX =
     "dev.markin.dev.markin.murmur"
