@@ -345,15 +345,13 @@ public final class GboardAiWritingToolsRuntime {
     static final String FLAG_USE_4C_IN_SIGNBOARD =
             "use_4c_in_signboard";
 
-    // Writing Helper & Imagen production backend hosts
+    // Writing Helper & Imagen backend hosts (left to Gboard's own production config)
     static final String FLAG_WRITING_HELPER_SERVER_TARGET =
             "writing_helper_server_target";
     static final String FLAG_GBOARD_IMAGEN_API_HOST =
             "gboard_imagen_api_host";
     static final String FLAG_WRITING_HELPER_VOICE_INPUT_MODEL_VERSION =
             "writing_helper_voice_input_model_version";
-    static final String PROD_GBOARD_IMAGEN_SERVER_TARGET =
-            "staging-gboard-imagen-pa.sandbox.googleapis.com";
 
     // Clipboard suggestion chips preference keys
     static final String PREF_KEY_ENABLE_AUTO_PASTE_CHIPS =
@@ -380,7 +378,7 @@ public final class GboardAiWritingToolsRuntime {
     static final String ALL_LANGUAGES_ALLOWLIST_VALUE = "*";
     static final String MODELESS_SMART_EDIT_REGEX_VERSION = "v3";
     static final String RENAMED_GBOARD_PACKAGE =
-            "com.akshaykadam.pixelboard";
+            "dev.markin.murmur";
     static final String PROOFREAD_MODEL_CONFIG =
             "202408051448_prod_sd_config";
     static final String TEXT_STYLIZATION_MODEL_CONFIG =
@@ -467,17 +465,6 @@ public final class GboardAiWritingToolsRuntime {
                 || FLAG_ENABLE_EXTENDED_CLIPBOARD_HISTORY.equals(flagName)
                 || FLAG_ENABLE_SYSTEM_CLIPBOARD_DIRECT_PASTE_FOR_QUICK_PASTE.equals(flagName)
                 || FLAG_EMOJI_PALETTE_V2.equals(flagName)
-                || FLAG_SUPER_INSERT.equals(flagName)
-                || FLAG_SUPER_INSERT_VK.equals(flagName)
-                || FLAG_SUPER_INSERT_ENABLE_DYNAMIC_MULTI_VIEW.equals(flagName)
-                || FLAG_SUPER_INSERT_CONTACTS.equals(flagName)
-                || FLAG_SUPER_INSERT_CLIPBOARD_QUERY_RESULTS.equals(flagName)
-                || FLAG_SUPER_INSERT_EXPRESSION_QUERY_RESULTS.equals(flagName)
-                || FLAG_SUPER_INSERT_LOCAL_IMAGE_RESULTS.equals(flagName)
-                || FLAG_SUPER_INSERT_BROWSING_HISTORY_RESULTS.equals(flagName)
-                || FLAG_SUPER_INSERT_NESTA_RESULTS.equals(flagName)
-                || FLAG_SUPER_INSERT_BELOW_CURSOR.equals(flagName)
-                || FLAG_ENABLE_SI_SHORTCUT_KEYS.equals(flagName)
                 || FLAG_ENABLE_SMART_COMPOSE.equals(flagName)
                 || FLAG_ENABLE_INLINE_SUGGESTIONS_ON_ALL_FIELDS.equals(flagName)
                 || FLAG_ENABLE_INLINE_COMPLETION.equals(flagName)
@@ -485,10 +472,6 @@ public final class GboardAiWritingToolsRuntime {
                 || FLAG_SMART_COMPOSE_STATUS.equals(flagName)
                 || FLAG_ENABLE_INCOGNITO_MODE_ENTRY_POINT.equals(flagName)
                 || FLAG_ALLOW_INCOGNITO_MODE_SWITCH.equals(flagName)
-                || FLAG_ENABLE_EMOGEN.equals(flagName)
-                || FLAG_EMOGEN_ENTRY_POINT.equals(flagName)
-                || FLAG_EMOGEN_FEATURE_ENABLED.equals(flagName)
-                || FLAG_EMOGEN_IN_ACCESS_POINTS.equals(flagName)
                 || FLAG_FIX_FIRST_AUTO_CORRECTION_COMMIT.equals(flagName)
                 || FLAG_LEARNING_FOR_EDITOR_WITHOUT_AUTO_CORRECTION.equals(flagName)
                 || FLAG_STOP_DEFERRING_ACCESS_POINTS_TASKS.equals(flagName)
@@ -541,11 +524,6 @@ public final class GboardAiWritingToolsRuntime {
                     && originalResult instanceof Double) {
                 return ENFORCED_THRESHOLD_FOR_CANDIDATES_FROM_USER_HISTORY;
             }
-            if ((FLAG_WRITING_HELPER_SERVER_TARGET.equals(flagName)
-                    || FLAG_GBOARD_IMAGEN_API_HOST.equals(flagName))
-                    && originalResult instanceof String) {
-                return PROD_GBOARD_IMAGEN_SERVER_TARGET;
-            }
             if ((FLAG_ENABLED_OCR_LANGUAGE_TAGS.equals(flagName)
                     || FLAG_FAST_ACCESS_BAR_APP_WHITELIST.equals(flagName)
                     || FLAG_ENABLE_EMOJIFY_LANGUAGE_TAGS.equals(flagName)
@@ -572,6 +550,8 @@ public final class GboardAiWritingToolsRuntime {
                     && originalResult instanceof String) {
                 return "";
             }
+            // Murmur keeps Signboard, Emogen (server image generation) and Super Insert
+            // (contacts / browsing-history search) off.
             if ((FLAG_ON_DEMAND_FEATURE_SPLIT.equals(flagName)
                     || FLAG_ENABLE_SIGNBOARD.equals(flagName)
                     || FLAG_SIGNBOARD_PROMPT_MANUAL_TRIGGER.equals(flagName)
@@ -581,17 +561,27 @@ public final class GboardAiWritingToolsRuntime {
                     || FLAG_SIGNBOARD_DOWNLOAD_DIALOG.equals(flagName)
                     || FLAG_SIGNBOARD_MOVE_AP_PROMPT.equals(flagName)
                     || FLAG_USE_4C_IN_SIGNBOARD.equals(flagName)
+                    || FLAG_SUPER_INSERT.equals(flagName)
+                    || FLAG_SUPER_INSERT_VK.equals(flagName)
+                    || FLAG_SUPER_INSERT_ENABLE_DYNAMIC_MULTI_VIEW.equals(flagName)
+                    || FLAG_SUPER_INSERT_CONTACTS.equals(flagName)
+                    || FLAG_SUPER_INSERT_CLIPBOARD_QUERY_RESULTS.equals(flagName)
+                    || FLAG_SUPER_INSERT_EXPRESSION_QUERY_RESULTS.equals(flagName)
+                    || FLAG_SUPER_INSERT_LOCAL_IMAGE_RESULTS.equals(flagName)
+                    || FLAG_SUPER_INSERT_BROWSING_HISTORY_RESULTS.equals(flagName)
+                    || FLAG_SUPER_INSERT_NESTA_RESULTS.equals(flagName)
+                    || FLAG_SUPER_INSERT_BELOW_CURSOR.equals(flagName)
+                    || FLAG_ENABLE_SI_SHORTCUT_KEYS.equals(flagName)
+                    || FLAG_ENABLE_EMOGEN.equals(flagName)
+                    || FLAG_EMOGEN_ENTRY_POINT.equals(flagName)
+                    || FLAG_EMOGEN_FEATURE_ENABLED.equals(flagName)
+                    || FLAG_EMOGEN_IN_ACCESS_POINTS.equals(flagName)
                     || FLAG_ENABLE_EMOJIFY_MODEL.equals(flagName))
                     && originalResult instanceof Boolean) {
                 return Boolean.FALSE;
             }
             if (isStockPhenotypeEnforcedFlag(flagName)
                     && originalResult instanceof Boolean) {
-                if ((FLAG_SUPER_INSERT_BROWSING_HISTORY_RESULTS.equals(flagName)
-                        || FLAG_SUPER_INSERT_NESTA_RESULTS.equals(flagName))
-                        && !isPersonalContextHintSupported()) {
-                    return Boolean.FALSE;
-                }
                 if (!Boolean.TRUE.equals(originalResult)) {
                     logLimited(FLAG_LOG_COUNT,
                             "flag=" + flagName
@@ -712,10 +702,6 @@ public final class GboardAiWritingToolsRuntime {
                 && GboardAiWritingToolsSettings.BACKEND_GBOARD_SERVER.equals(
                         settings.backendType)
                 && originalResult instanceof String) {
-            if (FLAG_WRITING_HELPER_SERVER_TARGET.equals(flagName)
-                    || FLAG_GBOARD_IMAGEN_API_HOST.equals(flagName)) {
-                return PROD_GBOARD_IMAGEN_SERVER_TARGET;
-            }
             if (FLAG_WRITING_HELPER_MODEL_VERSION.equals(flagName)
                     || FLAG_WRITING_HELPER_VOICE_INPUT_MODEL_VERSION.equals(flagName)) {
                 return PROOFREAD_MODEL_CONFIG;

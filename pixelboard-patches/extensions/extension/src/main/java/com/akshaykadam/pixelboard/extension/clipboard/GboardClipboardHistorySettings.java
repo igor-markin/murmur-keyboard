@@ -23,8 +23,7 @@ import com.akshaykadam.pixelboard.extension.settings.GboardPatchesSettings;
  *   <li>{@link #DURATION_1_HOUR} ("1") – 1 hour</li>
  *   <li>{@link #DURATION_24_HOURS} ("24") – 24 hours (Current maximum)</li>
  *   <li>{@link #DURATION_7_DAYS} ("168") – 7 days</li>
- *   <li>{@link #DURATION_30_DAYS} ("720") – 30 days</li>
- *   <li>{@link #DURATION_NEVER} ("876000") – Never (Unlimited / Manual deletion only, 100 years)</li>
+ *   <li>{@link #DURATION_30_DAYS} ("720") and {@link #DURATION_NEVER} ("876000") – legacy values, read as 7 days</li>
  * </ul>
  */
 public final class GboardClipboardHistorySettings {
@@ -58,9 +57,7 @@ public final class GboardClipboardHistorySettings {
     public static final String[] ALL_DURATIONS = {
             DURATION_1_HOUR,
             DURATION_24_HOURS,
-            DURATION_7_DAYS,
-            DURATION_30_DAYS,
-            DURATION_NEVER
+            DURATION_7_DAYS
     };
 
     private GboardClipboardHistorySettings() {
@@ -130,8 +127,6 @@ public final class GboardClipboardHistorySettings {
         switch (sanitize(duration)) {
             case DURATION_1_HOUR:   return DURATION_MS_1_HOUR;
             case DURATION_7_DAYS:   return DURATION_MS_7_DAYS;
-            case DURATION_30_DAYS:  return DURATION_MS_30_DAYS;
-            case DURATION_NEVER:    return DURATION_MS_NEVER;
             case DURATION_24_HOURS: // fall-through
             default:                return DURATION_MS_24_HOURS;
         }
@@ -143,8 +138,11 @@ public final class GboardClipboardHistorySettings {
             if ("1h".equals(duration)) return DURATION_1_HOUR;
             if ("24h".equals(duration)) return DURATION_24_HOURS;
             if ("7d".equals(duration)) return DURATION_7_DAYS;
-            if ("30d".equals(duration)) return DURATION_30_DAYS;
-            if ("never".equals(duration)) return DURATION_NEVER;
+            // Murmur caps retention at 7 days: copied passwords should not live forever.
+            if ("30d".equals(duration) || "never".equals(duration)
+                    || DURATION_30_DAYS.equals(duration) || DURATION_NEVER.equals(duration)) {
+                return DURATION_7_DAYS;
+            }
             for (String valid : ALL_DURATIONS) {
                 if (valid.equals(duration)) {
                     return duration;

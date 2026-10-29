@@ -30,7 +30,7 @@ class GboardSignatureBypassPatchContractTest {
         assertSame(COMPATIBILITY_GBOARD, compatibilities.single())
         assertEquals(GBOARD_PACKAGE, compatibilities.single().packageName)
         assertEquals(
-            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1853_RELEASE),
+            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1846_RELEASE, TARGET_VERSION_1853_RELEASE),
             compatibilities.single().targets.map { target -> target.version },
         )
 
@@ -46,24 +46,25 @@ class GboardSignatureBypassPatchContractTest {
         val packages = row.getAsJsonObject("compatiblePackages")
         assertEquals(setOf(GBOARD_PACKAGE), packages.keySet())
         assertEquals(
-            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1853_RELEASE),
+            listOf(TARGET_VERSION, TARGET_VERSION_1831, TARGET_VERSION_1831_RELEASE, TARGET_VERSION_1841_RELEASE, TARGET_VERSION_1846_RELEASE, TARGET_VERSION_1853_RELEASE),
             packages.getAsJsonArray(GBOARD_PACKAGE).map { it.asString },
         )
     }
 
     @Test
-    fun `production source uses only exact rpv normal return patch`() {
+    fun `production source only trusts the own package`() {
         val source = readSource(SIGNATURE_PATCH_PATH)
         assertTrue(source.contains("Lrpv;"))
         assertTrue(source.contains("Lrox;->b:Z"))
         assertTrue(source.contains("findGboardSignatureBypassTargetOrThrow"))
         assertTrue(source.contains("applyGboardSignatureBypass"))
+        assertTrue(source.contains("addSelfPackagePrologue"))
+        assertTrue(source.contains("Landroid/content/Context;->getPackageName()Ljava/lang/String;"))
+        assertTrue(source.contains("Ljava/lang/String;->equals(Ljava/lang/Object;)Z"))
+        assertFalse(source.contains("forceSignatureBypassReturns"))
         assertFalse(source.contains("Lqvi;"))
         assertFalse(source.contains("Lpuo;"))
         assertFalse(source.contains("17.0.10"))
-        assertFalse(source.contains("addInstructions(0, SIGNATURE_BYPASS_DELEGATE)"))
-        assertFalse(source.contains("SIGNATURE_BYPASS_DELEGATE"))
-        assertFalse(source.contains("Ljava/lang/String;->equals"))
         assertFalse(source.contains("contains(\"com.google.android.inputmethod.latin\")"))
     }
 
@@ -94,9 +95,10 @@ class GboardSignatureBypassPatchContractTest {
         const val TARGET_VERSION_1831 = "18.3.1.977415014-beta-arm64-v8a"
         const val TARGET_VERSION_1831_RELEASE = "18.3.1.977415014-release-arm64-v8a"
         const val TARGET_VERSION_1841_RELEASE = "18.4.1.985164140-release-arm64-v8a"
+        const val TARGET_VERSION_1846_RELEASE = "18.4.6.985164140-release-arm64-v8a"
         const val TARGET_VERSION_1853_RELEASE = "18.5.3.993608717-release-arm64-v8a"
         const val SIGNATURE_BYPASS_DESCRIPTION =
-            "Bypass Gboard signature whitelist checks and force them to pass."
+            "Let Gboard pass its own-package signature check after re-signing; other callers keep the stock check."
         const val SIGNATURE_PATCH_PATH =
             "patches/src/main/kotlin/com/akshaykadam/pixelboard/patches/gboard/features/" +
                 "signaturebypass/GboardSignatureBypassBytecodePatch.kt"

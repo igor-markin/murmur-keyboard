@@ -13,7 +13,7 @@
             "Package Rename": {
                 "enabled": true,
                 "options": {
-                    "app_display_name": "PixelBoard"
+                    "app_display_name": "Murmur"
                 }
             }
         }

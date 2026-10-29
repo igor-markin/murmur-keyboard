@@ -86,7 +86,7 @@ val gboardAiWritingToolsPatch = gboardPublicResourcePatch(
 val gboardSignatureBypassPatch = gboardPublicResourcePatch(
     featureId = "add_gboard_signature_bypass",
     name = "Add Gboard Signature Bypass",
-    description = "Bypass Gboard signature whitelist checks and force them to pass.",
+    description = "Let Gboard pass its own-package signature check after re-signing; other callers keep the stock check.",
     default = true
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)

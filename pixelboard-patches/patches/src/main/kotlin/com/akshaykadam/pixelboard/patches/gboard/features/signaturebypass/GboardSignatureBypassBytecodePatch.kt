@@ -7,8 +7,8 @@
  */
 package com.akshaykadam.pixelboard.patches.gboard.features.signaturebypass
 
-import com.akshaykadam.pixelboard.patches.shared.addInstruction
-import com.akshaykadam.pixelboard.patches.shared.replaceInstruction
+import com.akshaykadam.pixelboard.patches.shared.ExternalLabel
+import com.akshaykadam.pixelboard.patches.shared.addInstructionsWithLabels
 import com.akshaykadam.pixelboard.patches.shared.BytecodePatchContext
 import com.akshaykadam.pixelboard.patches.shared.bytecodePatch
 import com.akshaykadam.pixelboard.patches.shared.MutableMethod
@@ -23,7 +23,6 @@ import com.akshaykadam.pixelboard.patches.gboard.shared.VerifiedTransformationPl
 import com.akshaykadam.pixelboard.patches.gboard.shared.VerifiedTransformationState
 import com.akshaykadam.pixelboard.patches.gboard.shared.applyVerified
 import com.akshaykadam.pixelboard.patches.gboard.shared.isFieldReference
-import com.akshaykadam.pixelboard.patches.gboard.shared.isLiteralWrite
 import com.akshaykadam.pixelboard.patches.gboard.shared.isMethodReference
 import com.akshaykadam.pixelboard.patches.gboard.shared.isOpcode
 import com.akshaykadam.pixelboard.patches.shared.Constants.COMPATIBILITY_GBOARD
@@ -35,7 +34,7 @@ private const val SIGNATURE_UTILS_CLASS_1841_RELEASE = "Lryi;"
 private const val SIGNATURE_UTILS_CLASS_1853_RELEASE = "Lsfr;"
 
 internal val gboardSignatureBypassBytecodePatch = bytecodePatch(
-    description = "Force bypass Gboard signature whitelist checks."
+    description = "Let Gboard's own-package signature check pass after re-signing."
 ) {
     compatibleWith(COMPATIBILITY_GBOARD)
 
@@ -76,7 +75,7 @@ internal fun MutableMethod.applyGboardSignatureBypass() {
             targetName = "${definingClass}->$SIGNATURE_CHECK_METHOD_NAME",
             classify = MutableMethod::classifyGboardSignatureBypass,
             mutate = { method ->
-                method.forceSignatureBypassReturns()
+                method.addSelfPackagePrologue()
                 method
             },
         ),
@@ -87,8 +86,11 @@ private fun MutableMethod.classifyGboardSignatureBypass(): VerifiedTransformatio
     check(isExactGboardSignatureBypassTarget()) {
         "Refusing non-target signature bypass method $definingClass->$name"
     }
-    val instructions = implementation?.instructions
-        ?: error("No instructions available in $definingClass->$name")
+    val patched = hasSelfPackagePrologue()
+    // Structural checks run on the stock body, after our prologue when present.
+    val instructions = (implementation?.instructions?.toList()
+        ?: error("No instructions available in $definingClass->$name"))
+        .drop(if (patched) SELF_PACKAGE_PROLOGUE_SIZE else 0)
     check(implementation!!.registerCount == TARGET_REGISTER_COUNT) {
         "Unexpected register count in $definingClass->$name"
     }
@@ -138,39 +140,46 @@ private fun MutableMethod.classifyGboardSignatureBypass(): VerifiedTransformatio
         }
     }
 
-    val completedReturns = returnIndices.count { returnIndex ->
-        val returned = instructions[returnIndex] as OneRegisterInstruction
-        instructions.getOrNull(returnIndex - 1).isForcedTrueFor(returned.registerA)
-    }
     val oneLiteralCount = instructions.count { instruction ->
         instruction.normalizedOpcode().startsWith("CONST") &&
             (instruction as? NarrowLiteralInstruction)?.narrowLiteral == 1
     }
     return when {
-        completedReturns == returnIndices.size &&
-            oneLiteralCount == TARGET_COMPLETED_ONE_LITERAL_COUNT ->
+        patched && oneLiteralCount == TARGET_STOCK_ONE_LITERAL_COUNT ->
             VerifiedTransformationState.PATCHED
-        completedReturns == 0 &&
-            oneLiteralCount == TARGET_STOCK_ONE_LITERAL_COUNT ->
+        !patched && oneLiteralCount == TARGET_STOCK_ONE_LITERAL_COUNT ->
             VerifiedTransformationState.STOCK
         else -> VerifiedTransformationState.MALFORMED
     }
 }
 
-private fun MutableMethod.forceSignatureBypassReturns() {
-    val instructions = implementation?.instructions
+// The re-signed APK fails Gboard's startup check that its own package carries
+// Google's certificate. Answer "trusted" only for that own-package question and
+// leave every other caller check (e.g. WebDebugBridgeContentProvider) to the
+// stock digest comparison, so third-party apps are never treated as Google-signed.
+private fun MutableMethod.addSelfPackagePrologue() {
+    val firstStock = implementation?.instructions?.firstOrNull()
         ?: error("No instructions available in $definingClass->$name")
-    val returnIndices = instructions.indices.filter { index ->
-        instructions[index].isOpcode("RETURN")
-    }
-    returnIndices.asReversed().forEach { returnIndex ->
-        val resultRegister = (instructions[returnIndex] as OneRegisterInstruction).registerA
-        check(resultRegister <= MAX_CONST_4_REGISTER) {
-            "RETURN register v$resultRegister cannot be forced with const/4"
-        }
-        replaceInstruction(returnIndex, "const/4 v$resultRegister, 0x1")
-        addInstruction(returnIndex + 1, "return v$resultRegister")
-    }
+    addInstructionsWithLabels(
+        0,
+        """
+        invoke-virtual {p0}, $CONTEXT_GET_PACKAGE_NAME
+        move-result-object v0
+        invoke-virtual {v0, p1}, $STRING_EQUALS
+        move-result v0
+        if-eqz v0, :murmur_signature_stock_check
+        const/4 v0, 0x1
+        return v0
+        """.trimIndent(),
+        ExternalLabel("murmur_signature_stock_check", firstStock),
+    )
+}
+
+private fun MutableMethod.hasSelfPackagePrologue(): Boolean {
+    val instructions = implementation?.instructions ?: return false
+    return instructions.size > 2 &&
+        instructions[0].isMethodReference(CONTEXT_GET_PACKAGE_NAME) &&
+        instructions[2].isMethodReference(STRING_EQUALS)
 }
 
 private fun MutableMethod.isExactGboardSignatureBypassTarget(): Boolean =
@@ -183,10 +192,6 @@ private fun MutableMethod.isExactGboardSignatureBypassTarget(): Boolean =
         returnType == "Z" &&
         parameterTypes == SIGNATURE_CHECK_PARAMETERS &&
         accessFlags == TARGET_ACCESS_FLAGS
-
-private fun com.android.tools.smali.dexlib2.iface.instruction.Instruction?.isForcedTrueFor(
-    register: Int,
-): Boolean = this?.isOpcode("CONST_4") == true && isLiteralWrite(register, 1)
 
 private fun com.android.tools.smali.dexlib2.iface.instruction.Instruction.matchesLiteral(
     expected: LiteralShape,
@@ -262,6 +267,8 @@ private val TARGET_BASELINE_LITERALS = listOf(
 private val TARGET_RETURN_REGISTERS = listOf(6, 4, 3)
 private const val TARGET_REGISTER_COUNT = 8
 private const val TARGET_STOCK_ONE_LITERAL_COUNT = 1
-private const val TARGET_COMPLETED_ONE_LITERAL_COUNT = 4
-private const val MAX_CONST_4_REGISTER = 15
+private const val CONTEXT_GET_PACKAGE_NAME =
+    "Landroid/content/Context;->getPackageName()Ljava/lang/String;"
+private const val SELF_PACKAGE_PROLOGUE_SIZE = 7
+private const val STRING_EQUALS = "Ljava/lang/String;->equals(Ljava/lang/Object;)Z"
 private val TARGET_ACCESS_FLAGS = AccessFlags.PUBLIC.value or AccessFlags.STATIC.value

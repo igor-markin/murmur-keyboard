@@ -10,8 +10,6 @@ public final class GboardAiWritingToolsSettings {
             "pref_ai_writing_tools_all_keyboards_enabled";
     public static final String PREF_KEY_BACKEND_TYPE =
             "pref_ai_writing_tools_backend_type";
-    public static final String PREF_KEY_BACKEND_RESET_MIGRATED =
-            "pref_backend_force_server_v1";
     public static final String PREF_KEY_V2_ENABLED =
             "pref_ai_writing_tools_v2_enabled";
     public static final String BACKEND_GBOARD_SERVER = "GBOARD_SERVER";
@@ -22,7 +20,9 @@ public final class GboardAiWritingToolsSettings {
     public static final boolean DEFAULT_ENABLED = true;
     public static final boolean DEFAULT_ALL_KEYBOARDS = true;
     public static final boolean DEFAULT_V2_ENABLED = false;
-    public static final String DEFAULT_BACKEND_TYPE = BACKEND_GBOARD_SERVER;
+    // On-device Gemini Nano by default, so typed text stays on the phone unless the
+    // user explicitly picks the server backend.
+    public static final String DEFAULT_BACKEND_TYPE = BACKEND_PRIVATE_INFERENCE_AICORE;
 
     private GboardAiWritingToolsSettings() {
     }
@@ -60,13 +60,11 @@ public final class GboardAiWritingToolsSettings {
             editor.putBoolean(PREF_KEY_ALL_KEYBOARDS, DEFAULT_ALL_KEYBOARDS);
             editor.putBoolean("pref_defaults_migrated_v3", true);
         }
-        if (!preferences.contains(PREF_KEY_BACKEND_TYPE)
-                || !preferences.getBoolean(PREF_KEY_BACKEND_RESET_MIGRATED, false)) {
+        if (!preferences.contains(PREF_KEY_BACKEND_TYPE)) {
             if (editor == null) {
                 editor = preferences.edit();
             }
             editor.putString(PREF_KEY_BACKEND_TYPE, DEFAULT_BACKEND_TYPE);
-            editor.putBoolean(PREF_KEY_BACKEND_RESET_MIGRATED, true);
         }
         if (!preferences.contains(PREF_KEY_V2_ENABLED)) {
             if (editor == null) {

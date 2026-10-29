@@ -24,3 +24,12 @@ input/splits*/
 
 # Scratch directory
 scratch/
+
+# Murmur: never commit signing keys, credentials, built bundles or stock APKs
+*.keystore
+*.jks
+*.p12
+*.pem
+gradle.properties.local
+patches/*.mpp
+input/

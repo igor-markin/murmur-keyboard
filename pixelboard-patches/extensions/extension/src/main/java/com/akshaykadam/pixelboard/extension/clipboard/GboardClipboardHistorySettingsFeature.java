@@ -78,10 +78,6 @@ public final class GboardClipboardHistorySettingsFeature
                         R.string.gboard_patches_clipboard_history_duration_24h),
                 GboardSettingsText.get(context,
                         R.string.gboard_patches_clipboard_history_duration_7d),
-                GboardSettingsText.get(context,
-                        R.string.gboard_patches_clipboard_history_duration_30d),
-                GboardSettingsText.get(context,
-                        R.string.gboard_patches_clipboard_history_duration_never),
         };
         durationValues = GboardClipboardHistorySettings.ALL_DURATIONS.clone();
         sectionBehavior = GboardSettingsText.get(context,

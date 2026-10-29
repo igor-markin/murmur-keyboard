@@ -804,8 +804,8 @@ class GboardPackageRenameTransformTest {
 
     private companion object {
         const val SOURCE_PACKAGE = "com.google.android.inputmethod.latin"
-        const val FINAL_PACKAGE = "com.akshaykadam.pixelboard"
-        const val DOUBLE_PREFIX = "com.akshaykadam.com.akshaykadam.pixelboard"
+        const val FINAL_PACKAGE = "dev.markin.murmur"
+        const val DOUBLE_PREFIX = "dev.markin.dev.markin.murmur"
         const val SETTINGS_ACTIVITY_CLASS =
             "com.akshaykadam.pixelboard.extension.settings.GboardPatchesSettingsActivity"
         const val SETTINGS_PROVIDER_CLASS =

@@ -15,7 +15,7 @@ import java.util.zip.ZipOutputStream;
 
 public final class GboardDictationPayloadDetectorTest {
     private static final String CUSTOM_PACKAGE =
-            "com.akshaykadam.pixelboard";
+            "dev.markin.murmur";
     private static final String OFFICIAL_PACKAGE =
             "com.google.android.inputmethod.latin";
     private static final String DICTATION_ENTRY =

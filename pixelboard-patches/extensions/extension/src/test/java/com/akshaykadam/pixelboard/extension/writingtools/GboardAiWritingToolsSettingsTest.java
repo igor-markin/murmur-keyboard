@@ -24,23 +24,20 @@ public final class GboardAiWritingToolsSettingsTest {
                 Boolean.TRUE,
                 preferences.values.get(GboardAiWritingToolsSettings.PREF_KEY_ALL_KEYBOARDS));
         Assert.assertEquals(
-                GboardAiWritingToolsSettings.BACKEND_GBOARD_SERVER,
+                GboardAiWritingToolsSettings.BACKEND_PRIVATE_INFERENCE_AICORE,
                 preferences.values.get(GboardAiWritingToolsSettings.PREF_KEY_BACKEND_TYPE));
-        Assert.assertEquals(
-                Boolean.TRUE,
-                preferences.values.get(GboardAiWritingToolsSettings.PREF_KEY_BACKEND_RESET_MIGRATED));
         Assert.assertEquals(
                 Boolean.FALSE,
                 preferences.values.get(GboardAiWritingToolsSettings.PREF_KEY_V2_ENABLED));
     }
 
     @Test
-    public void ensureDefaultsMigratesExistingBackendSelectionBackToServer() {
+    public void ensureDefaultsKeepsExistingBackendSelection() {
         InMemorySharedPreferences preferences = new InMemorySharedPreferences();
         preferences.edit()
                 .putString(
                         GboardAiWritingToolsSettings.PREF_KEY_BACKEND_TYPE,
-                        GboardAiWritingToolsSettings.BACKEND_PRIVATE_INFERENCE_AICORE)
+                        GboardAiWritingToolsSettings.BACKEND_GBOARD_SERVER)
                 .apply();
 
         GboardAiWritingToolsSettings.ensureDefaults(preferences);
@@ -48,12 +45,6 @@ public final class GboardAiWritingToolsSettingsTest {
         Assert.assertEquals(
                 GboardAiWritingToolsSettings.BACKEND_GBOARD_SERVER,
                 GboardAiWritingToolsSettings.readBackendType(preferences));
-        Assert.assertEquals(
-                GboardAiWritingToolsSettings.BACKEND_GBOARD_SERVER,
-                preferences.values.get(GboardAiWritingToolsSettings.PREF_KEY_BACKEND_TYPE));
-        Assert.assertEquals(
-                Boolean.TRUE,
-                preferences.values.get(GboardAiWritingToolsSettings.PREF_KEY_BACKEND_RESET_MIGRATED));
     }
 
     @Test

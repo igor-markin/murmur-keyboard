@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# PixelBoard - Build & Patch Automation Script
+# Murmur - Build & Patch Automation Script (fork of PixelBoard)
 # Maintainer: Akshay Kadam (@Akshayykadam)
 # Repository: https://github.com/Akshayykadam/PixelBoard
 # ==============================================================================
@@ -10,7 +10,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-REBUILD_PATCH=false
+REBUILD_PATCH=true
 INPUT_APK="input/gboard.apk"
 for arg in "$@"; do
     case "$arg" in
@@ -20,10 +20,10 @@ for arg in "$@"; do
         -h|--help)
             echo "Usage: ./build.sh [options] [input_apk]"
             echo "Options:"
-            echo "  -r, --rebuild    Recompile patch bundle from pixelboard-patches/ using Gradle"
+            echo "  -r, --rebuild    Accepted for compatibility; patches are always built from source"
             echo "  -h, --help       Show this help message"
             echo ""
-            echo "By default, ./build.sh runs 100% offline using the pre-bundled patches/PixelBoard.mpp."
+            echo "Signing key: \$MURMUR_KEYSTORE (default ~/.murmur/murmur.keystore), password from \$MURMUR_KEYSTORE_PASSWORD or prompt."
             exit 0
             ;;
         *)
@@ -96,32 +96,48 @@ echo "=== 🔨 Applying Patches to $INPUT_APK ==="
 mkdir -p output
 mkdir -p tools/patcher-data
 
-KEYSTORE_PATH="tools/patcher-data/pixelboard.keystore"
-if [[ ! -f "$KEYSTORE_PATH" ]]; then
-    echo "🔑 Generating PixelBoard release keystore..."
-    keytool -genkeypair \
-        -keystore "$KEYSTORE_PATH" \
-        -alias pixelboard \
-        -keyalg RSA \
-        -keysize 2048 \
-        -validity 10000 \
-        -storepass pixelboard \
-        -keypass pixelboard \
-        -dname "CN=PixelBoard, OU=PixelBoard, O=PixelBoard, L=Unknown, ST=Unknown, C=US" \
-        >/dev/null 2>&1
+# Signing key lives outside the repo and is never committed. Losing it means
+# reinstalling the app (Android only accepts updates signed with the same key).
+KEYSTORE_PATH="${MURMUR_KEYSTORE:-$HOME/.murmur/murmur.keystore}"
+KEY_ALIAS="murmur"
+KEYTOOL_BIN="$(dirname "$JAVA_BIN")/keytool"
+if [[ -z "${MURMUR_KEYSTORE_PASSWORD:-}" ]]; then
+    read -r -s -p "🔑 Keystore password: " MURMUR_KEYSTORE_PASSWORD
+    echo
 fi
+if [[ ${#MURMUR_KEYSTORE_PASSWORD} -lt 12 ]]; then
+    echo "❌ Keystore password must be at least 12 characters."
+    exit 1
+fi
+if [[ ! -f "$KEYSTORE_PATH" ]]; then
+    echo "🔑 Generating Murmur signing key at $KEYSTORE_PATH..."
+    mkdir -p "$(dirname "$KEYSTORE_PATH")"
+    chmod 700 "$(dirname "$KEYSTORE_PATH")"
+    "$KEYTOOL_BIN" -genkeypair \
+        -keystore "$KEYSTORE_PATH" \
+        -storetype PKCS12 \
+        -alias "$KEY_ALIAS" \
+        -keyalg RSA \
+        -keysize 4096 \
+        -validity 10000 \
+        -storepass:env MURMUR_KEYSTORE_PASSWORD \
+        -dname "CN=Murmur" \
+        >/dev/null
+    chmod 600 "$KEYSTORE_PATH"
+fi
+export MURMUR_KEYSTORE_PASSWORD
 
 "$JAVA_BIN" -jar tools/patcher.jar patch \
     --patches="$MPP_PATH" \
     --options-file=options.json \
     --striplibs=arm64-v8a \
-    --signer="PixelBoard" \
+    --signer="Murmur" \
     --keystore="$KEYSTORE_PATH" \
-    --keystore-password=pixelboard \
-    --keystore-entry-alias=pixelboard \
-    --keystore-entry-password=pixelboard \
+    --keystore-password="$MURMUR_KEYSTORE_PASSWORD" \
+    --keystore-entry-alias="$KEY_ALIAS" \
+    --keystore-entry-password="$MURMUR_KEYSTORE_PASSWORD" \
     --temporary-files-path="tools/patcher-data/tmp" \
-    -o=output/PixelBoard.apk \
+    -o=output/Murmur.apk \
     -r=output/patching-result.json \
     "$INPUT_APK"
 
@@ -129,16 +145,16 @@ if [[ -f "output/patching-result.json" ]]; then
     GBOARD_VER=$(grep -o '"packageVersion":"[^"]*"' output/patching-result.json | cut -d'"' -f4 | cut -d'-' -f1)
     GBOARD_SHORT_VER=$(echo "$GBOARD_VER" | cut -d'.' -f1-3)
     if [[ -n "$GBOARD_VER" ]]; then
-        cp output/PixelBoard.apk "output/PixelBoard-${GBOARD_VER}.apk"
-        echo "📦 Versioned APK saved to: output/PixelBoard-${GBOARD_VER}.apk"
+        cp output/Murmur.apk "output/Murmur-${GBOARD_VER}.apk"
+        echo "📦 Versioned APK saved to: output/Murmur-${GBOARD_VER}.apk"
     fi
     if [[ -n "$GBOARD_SHORT_VER" ]] && [[ "$GBOARD_SHORT_VER" != "$GBOARD_VER" ]]; then
-        cp output/PixelBoard.apk "output/PixelBoard-${GBOARD_SHORT_VER}.apk"
-        echo "📦 Short-versioned APK saved to: output/PixelBoard-${GBOARD_SHORT_VER}.apk"
+        cp output/Murmur.apk "output/Murmur-${GBOARD_SHORT_VER}.apk"
+        echo "📦 Short-versioned APK saved to: output/Murmur-${GBOARD_SHORT_VER}.apk"
     fi
 fi
 if [[ -n "${PATCH_VERSION:-}" ]]; then
-    cp output/PixelBoard.apk "output/PixelBoard-${PATCH_VERSION}.apk"
+    cp output/Murmur.apk "output/Murmur-${PATCH_VERSION}.apk"
 fi
 
-echo "🎉 Successfully built output/PixelBoard.apk!"
+echo "🎉 Successfully built output/Murmur.apk!"
