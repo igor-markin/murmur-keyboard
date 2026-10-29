@@ -22,8 +22,10 @@ Patches only — no prebuilt APKs, no signing keys in the repository.
 Requirements: JDK 21, Android SDK (build-tools 35, platform 35), a GitHub classic token with
 `read:packages` in `~/.gradle/gradle.properties` (`gpr.user`, `gpr.key`) for the Morphe plugin.
 
+Store the keystore password once in the macOS keychain; `build.sh` reads it from there and
+finds the Homebrew JDK 21 and `~/Library/Android/sdk` on its own:
+
 ```
-export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
-export ANDROID_HOME="$HOME/Library/Android/sdk"
-./build.sh input/gboard.apk
+security add-generic-password -s murmur-keystore -a "$USER" -w
+./build.sh input/gboard.apks
 ```

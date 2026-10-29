@@ -34,11 +34,27 @@ for arg in "$@"; do
     esac
 done
 
+# Gradle needs JAVA_HOME / ANDROID_HOME; fall back to the Homebrew JDK 21 and the
+# default macOS SDK location so a fresh terminal works without shell profile edits.
+if [[ -z "${JAVA_HOME:-}" ]] && command -v brew >/dev/null 2>&1; then
+    BREW_JDK="$(brew --prefix openjdk@21 2>/dev/null)/libexec/openjdk.jdk/Contents/Home"
+    if [[ -x "$BREW_JDK/bin/java" ]]; then
+        export JAVA_HOME="$BREW_JDK"
+    fi
+fi
+if [[ -z "${ANDROID_HOME:-}" ]] && [[ -d "$HOME/Library/Android/sdk" ]]; then
+    export ANDROID_HOME="$HOME/Library/Android/sdk"
+fi
+# Keystore password can come from the macOS keychain (see MURMUR.md).
+if [[ -z "${MURMUR_KEYSTORE_PASSWORD:-}" ]] && command -v security >/dev/null 2>&1; then
+    MURMUR_KEYSTORE_PASSWORD="$(security find-generic-password -s murmur-keystore -w 2>/dev/null || true)"
+fi
+
 PATCH_VERSION=$(grep -E "^version\s*=" pixelboard-patches/gradle.properties | cut -d'=' -f2 | tr -d ' ')
 MPP_PATH="patches/PixelBoard.mpp"
 
 if [[ "$REBUILD_PATCH" == true ]] || [[ ! -f "$MPP_PATH" ]]; then
-    echo "=== 🎹 Compiling PixelBoard Patch Bundle from Source ==="
+    echo "=== 🎹 Compiling Murmur Patch Bundle from Source ==="
     cd pixelboard-patches
     ./gradlew :patches:buildAndroid
     cd "$SCRIPT_DIR"
