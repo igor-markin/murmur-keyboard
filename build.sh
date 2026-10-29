@@ -142,6 +142,9 @@ if [[ ! -f "$KEYSTORE_PATH" ]]; then
     chmod 600 "$KEYSTORE_PATH"
 fi
 export MURMUR_KEYSTORE_PASSWORD
+# Morphe converts the PKCS12 key into a BKS copy next to patcher.jar; remove that
+# copy of the private key once patching finishes, whatever the outcome.
+trap 'rm -f tools/morphe-data/imported.keystore' EXIT
 
 "$JAVA_BIN" -jar tools/patcher.jar patch \
     --patches="$MPP_PATH" \
